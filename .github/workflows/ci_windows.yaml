@@ -1,8 +1,11 @@
 name: CI - Windows
 
-on: [pull_request, push]
+on:
+  release:
+    types: [published]
 
-permissions: {}
+permissions:
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -228,8 +231,8 @@ jobs:
           7z x -o"dist/windows/" "dist/windows/NSISPlugins.zip"
           makensis /DQBT_CPU_ARCH="${{ matrix.config.arch }}" /DQBT_DIST_DIR="../../upload/qBittorrent" /WX dist/windows/qbittorrent.nsi
 
-      - name: Upload installer
-        uses: actions/upload-artifact@v6
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: qBittorrent-CI_Windows-${{ matrix.config.arch }}_libtorrent-${{ matrix.libtorrent.version }}-setup
-          path: dist/windows/qbittorrent_*_setup.exe
+          files: dist/windows/qbittorrent_*_setup.exe
+          generate_release_notes: true
