@@ -17,6 +17,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     permissions:
       actions: write
+      contents: write
 
     strategy:
       fail-fast: false
@@ -205,12 +206,6 @@ jobs:
           copy build/target_graph.dot upload/cmake
           mkdir upload/cmake/libtorrent
           copy ${{ env.libtorrent_path }}/build/compile_commands.json upload/cmake/libtorrent
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: qBittorrent-CI_Windows-${{ matrix.config.arch }}
-          path: upload
 
       - name: Install NSIS
         uses: repolevedavaj/install-nsis@1ab2f7ba2fe9408db612029be0bb3c0088b0d3e9 # v1.2.1
