@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   ci:
-    name: Build (${{ matrix.libtorrent.version }}, ${{ matrix.config.arch }})
+    name: Build
     runs-on: ${{ matrix.config.os }}
     permissions:
       actions: write
@@ -21,15 +21,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        libtorrent:
-          - version: "2.0.11"
-            boost_major_version: "1"
-            boost_minor_version: "90"
-            boost_patch_version: "0"
-          - version: "1.2.20"
-            boost_major_version: "1"
-            boost_minor_version: "86"
-            boost_patch_version: "0"
         config:
         - os: windows-latest
           arch: x64
@@ -98,8 +89,8 @@ jobs:
 
       - name: Install boost
         run: |
-          $boost_url="https://archives.boost.io/release/${{ matrix.libtorrent.boost_major_version }}.${{ matrix.libtorrent.boost_minor_version }}.${{ matrix.libtorrent.boost_patch_version }}/source/boost_${{ matrix.libtorrent.boost_major_version }}_${{ matrix.libtorrent.boost_minor_version }}_${{ matrix.libtorrent.boost_patch_version }}.tar.gz"
-          $boost_url2="https://sourceforge.net/projects/boost/files/boost/${{ matrix.libtorrent.boost_major_version }}.${{ matrix.libtorrent.boost_minor_version }}.${{ matrix.libtorrent.boost_patch_version }}/boost_${{ matrix.libtorrent.boost_major_version }}_${{ matrix.libtorrent.boost_minor_version }}_${{ matrix.libtorrent.boost_patch_version }}.tar.gz"
+          $boost_url="https://archives.boost.io/release/1.90.0/source/boost_1_90_0.tar.gz"
+          $boost_url2="https://sourceforge.net/projects/boost/files/boost/1.90.0/boost_1_90_0.tar.gz"
           curl -L -o "${{ runner.temp }}/boost.tar.gz" "$boost_url"
           tar -xf "${{ runner.temp }}/boost.tar.gz" -C "${{ github.workspace }}/.."
           if ($LastExitCode -ne 0)
@@ -128,7 +119,7 @@ jobs:
       - name: Install libtorrent
         run: |
           git clone `
-            --branch v${{ matrix.libtorrent.version }} `
+            --branch v2.0.11 `
             --depth 1 `
             --recurse-submodules `
             https://github.com/arvidn/libtorrent.git `
@@ -218,7 +209,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: qBittorrent-CI_Windows-${{ matrix.config.arch }}_libtorrent-${{ matrix.libtorrent.version }}
+          name: qBittorrent-CI_Windows-${{ matrix.config.arch }}
           path: upload
 
       - name: Install NSIS
@@ -231,8 +222,8 @@ jobs:
           7z x -o"dist/windows/" "dist/windows/NSISPlugins.zip"
           makensis /DQBT_CPU_ARCH="${{ matrix.config.arch }}" /DQBT_DIST_DIR="../../upload/qBittorrent" /WX dist/windows/qbittorrent.nsi
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/windows/qbittorrent_*_setup.exe
-          generate_release_notes: true
+      - name: Upload installer to release
+        run: |
+          gh release upload ${{ github.ref_name }} dist/windows/qbittorrent_*_setup.exe --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
