@@ -88,6 +88,8 @@ public:
         TR_REANNOUNCE,
         TR_PRIVATE,
         TR_CREATE_DATE,
+        TR_LAST_DL_ACTIVITY,
+        TR_LAST_UL_ACTIVITY,
 
         NB_COLUMNS
     };

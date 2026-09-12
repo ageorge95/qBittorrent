@@ -190,6 +190,8 @@ QVariant TransferListModel::headerData(const int section, const Qt::Orientation 
             case TR_RATIO_LIMIT: return tr("Ratio Limit", "Upload share ratio limit");
             case TR_SEEN_COMPLETE_DATE: return tr("Last Seen Complete", "Indicates the time when the torrent was last seen complete/whole");
             case TR_LAST_ACTIVITY: return tr("Last Activity", "Time passed since a chunk was downloaded/uploaded");
+            case TR_LAST_DL_ACTIVITY: return tr("Last DL Activity", "Time passed since a chunk was downloaded");
+            case TR_LAST_UL_ACTIVITY: return tr("Last UL Activity", "Time passed since a chunk was uploaded");
             case TR_TOTAL_SIZE: return tr("Total Size", "i.e. Size including unwanted data");
             case TR_AVAILABILITY: return tr("Availability", "The number of distributed copies of the torrent");
             case TR_INFOHASH_V1: return tr("Info Hash v1", "i.e: torrent info hash v1");
@@ -231,6 +233,8 @@ QVariant TransferListModel::headerData(const int section, const Qt::Orientation 
             case TR_POPULARITY:
             case TR_QUEUE_POSITION:
             case TR_LAST_ACTIVITY:
+            case TR_LAST_DL_ACTIVITY:
+            case TR_LAST_UL_ACTIVITY:
             case TR_AVAILABILITY:
             case TR_REANNOUNCE:
                 return QVariant(Qt::AlignRight | Qt::AlignVCenter);
@@ -435,6 +439,10 @@ QString TransferListModel::displayValue(const BitTorrent::Torrent *torrent, cons
         return QLocale().toString(torrent->lastSeenComplete().toLocalTime(), QLocale::ShortFormat);
     case TR_LAST_ACTIVITY:
         return lastActivityString(torrent->timeSinceActivity());
+    case TR_LAST_DL_ACTIVITY:
+        return lastActivityString(torrent->timeSinceDownload());
+    case TR_LAST_UL_ACTIVITY:
+        return lastActivityString(torrent->timeSinceUpload());
     case TR_AVAILABILITY:
         return availabilityString(torrent->distributedCopies());
     case TR_TOTAL_SIZE:
@@ -520,6 +528,10 @@ QVariant TransferListModel::internalValue(const BitTorrent::Torrent *torrent, co
         return torrent->lastSeenComplete();
     case TR_LAST_ACTIVITY:
         return torrent->timeSinceActivity();
+    case TR_LAST_DL_ACTIVITY:
+        return torrent->timeSinceDownload();
+    case TR_LAST_UL_ACTIVITY:
+        return torrent->timeSinceUpload();
     case TR_AVAILABILITY:
         return torrent->distributedCopies();
     case TR_TOTAL_SIZE:
@@ -600,6 +612,8 @@ QVariant TransferListModel::data(const QModelIndex &index, const int role) const
         case TR_POPULARITY:
         case TR_QUEUE_POSITION:
         case TR_LAST_ACTIVITY:
+        case TR_LAST_DL_ACTIVITY:
+        case TR_LAST_UL_ACTIVITY:
         case TR_AVAILABILITY:
         case TR_REANNOUNCE:
             return QVariant(Qt::AlignRight | Qt::AlignVCenter);

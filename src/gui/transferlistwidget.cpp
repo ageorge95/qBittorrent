@@ -176,6 +176,8 @@ TransferListWidget::TransferListWidget(IGUIApplication *app, QWidget *parent)
         setColumnHidden(TransferListModel::TR_POPULARITY, true);
         setColumnHidden(TransferListModel::TR_SEEN_COMPLETE_DATE, true);
         setColumnHidden(TransferListModel::TR_LAST_ACTIVITY, true);
+        setColumnHidden(TransferListModel::TR_LAST_DL_ACTIVITY, true);
+        setColumnHidden(TransferListModel::TR_LAST_UL_ACTIVITY, true);
         setColumnHidden(TransferListModel::TR_TOTAL_SIZE, true);
         setColumnHidden(TransferListModel::TR_REANNOUNCE, true);
         setColumnHidden(TransferListModel::TR_PRIVATE, true);
