@@ -240,6 +240,8 @@ int TransferListSortModel::compare(const QModelIndex &left, const QModelIndex &r
     case TransferListModel::TR_COMPLETED:
     case TransferListModel::TR_ETA:
     case TransferListModel::TR_LAST_ACTIVITY:
+    case TransferListModel::TR_LAST_DL_ACTIVITY:
+    case TransferListModel::TR_LAST_UL_ACTIVITY:
     case TransferListModel::TR_REANNOUNCE:
     case TransferListModel::TR_SIZE:
     case TransferListModel::TR_TIME_ELAPSED:
