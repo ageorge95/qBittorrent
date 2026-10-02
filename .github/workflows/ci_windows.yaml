@@ -160,12 +160,22 @@ jobs:
             -DVCPKG_TARGET_TRIPLET=${{ matrix.config.arch }}-windows-static-md-release `
             -DVERBOSE_CONFIGURE=ON `
             --graphviz=build/target_graph.dot
-          cmake --build build --target qbt_update_translations
           cmake --build build
+          if ($LastExitCode -ne 0)
+          {
+            # transient file locks (e.g. antivirus) can fail a link; retry once
+            Write-Host "Build failed with exit code $LastExitCode, retrying once..."
+            cmake --build build
+          }
+          if ($LastExitCode -ne 0) { exit $LastExitCode }
           cmake --build build --target check
 
       - name: Prepare build artifacts
         run: |
+          if (!(Test-Path -LiteralPath "build/qbittorrent.exe"))
+          {
+            throw "build/qbittorrent.exe was not produced. The 'Build qBittorrent' step failed but its error was masked."
+          }
           mkdir upload
           mkdir upload/qBittorrent
           copy build/qbittorrent.exe upload/qBittorrent
