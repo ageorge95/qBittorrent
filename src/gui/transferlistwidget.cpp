@@ -417,6 +417,12 @@ void TransferListWidget::stopVisibleTorrents()
         torrent->stop();
 }
 
+void TransferListWidget::pauseWhenMetadataReceivedSelectedTorrents()
+{
+    for (BitTorrent::Torrent *const torrent : asConst(getSelectedTorrents()))
+        torrent->setStopCondition(BitTorrent::Torrent::StopCondition::MetadataReceived);
+}
+
 void TransferListWidget::softDeleteSelectedTorrents()
 {
     deleteSelectedTorrents(false);
@@ -1005,6 +1011,9 @@ void TransferListWidget::displayListMenu()
     connect(actionStop, &QAction::triggered, this, &TransferListWidget::stopSelectedTorrents);
     auto *actionForceStart = new QAction(UIThemeManager::instance()->getIcon(u"torrent-start-forced"_s, u"media-playback-start"_s), tr("Force Star&t", "Force Resume/start the torrent"), listMenu);
     connect(actionForceStart, &QAction::triggered, this, &TransferListWidget::forceStartSelectedTorrents);
+    auto *actionPauseOnMetadata = new QAction(UIThemeManager::instance()->getIcon(u"torrent-stop"_s, u"media-playback-pause"_s), tr("Pa&use when metadata received"), listMenu);
+    actionPauseOnMetadata->setToolTip(tr("Pause the torrent once the metadata is downloaded"));
+    connect(actionPauseOnMetadata, &QAction::triggered, this, &TransferListWidget::pauseWhenMetadataReceivedSelectedTorrents);
     auto *actionDelete = new QAction(UIThemeManager::instance()->getIcon(u"list-remove"_s), tr("&Remove", "Remove the torrent"), listMenu);
     connect(actionDelete, &QAction::triggered, this, &TransferListWidget::softDeleteSelectedTorrents);
     auto *actionPreviewFile = new QAction(UIThemeManager::instance()->getIcon(u"view-preview"_s), tr("Pre&view file..."), listMenu);
@@ -1076,6 +1085,7 @@ void TransferListWidget::displayListMenu()
     TagSet tagsInAll;
     bool hasInfohashV1 = false, hasInfohashV2 = false;
     bool oneCanForceReannounce = false;
+    bool oneCanPauseOnMetadata = false;
 
     for (const QModelIndex &index : selectedIndexes)
     {
@@ -1173,10 +1183,14 @@ void TransferListWidget::displayListMenu()
         if (!isStopped && !rechecking && !queued)
             oneCanForceReannounce = true;
 
+        if (!torrent->hasMetadata() && !isStopped && !rechecking && !torrent->isErrored() && !torrent->hasMissingFiles())
+            oneCanPauseOnMetadata = true;
+
         if (oneHasMetadata && oneNotFinished && !allSameSequentialDownloadMode
             && !allSamePrioFirstlast && !allSameSuperSeeding && !allSameCategory
             && needsStart && needsForce && needsStop && needsPreview && !allSameAutoTMM
-            && hasInfohashV1 && hasInfohashV2 && oneCanForceReannounce)
+            && hasInfohashV1 && hasInfohashV2 && oneCanForceReannounce
+            && oneCanPauseOnMetadata)
         {
             break;
         }
@@ -1188,6 +1202,8 @@ void TransferListWidget::displayListMenu()
         listMenu->addAction(actionStop);
     if (needsForce)
         listMenu->addAction(actionForceStart);
+    if (oneCanPauseOnMetadata)
+        listMenu->addAction(actionPauseOnMetadata);
     listMenu->addSeparator();
     listMenu->addAction(actionDelete);
     listMenu->addSeparator();

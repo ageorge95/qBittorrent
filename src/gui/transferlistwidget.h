@@ -75,6 +75,7 @@ public slots:
     void startVisibleTorrents();
     void forceStartVisibleTorrents();
     void stopSelectedTorrents();
+    void pauseWhenMetadataReceivedSelectedTorrents();
     void stopVisibleTorrents();
     void softDeleteSelectedTorrents();
     void permDeleteSelectedTorrents();
