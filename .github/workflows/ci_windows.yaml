@@ -90,8 +90,8 @@ jobs:
 
       - name: Install boost
         run: |
-          $boost_url="https://archives.boost.io/release/1.91.0/source/boost_1_91_0.tar.gz"
-          $boost_url2="https://sourceforge.net/projects/boost/files/boost/1.91.0/boost_1_91_0.tar.gz"
+          $boost_url="https://archives.boost.io/release/1.86.0/source/boost_1_86_0.tar.gz"
+          $boost_url2="https://sourceforge.net/projects/boost/files/boost/1.86.0/boost_1_86_0.tar.gz"
           curl -L -o "${{ runner.temp }}/boost.tar.gz" "$boost_url"
           tar -xf "${{ runner.temp }}/boost.tar.gz" -C "${{ github.workspace }}/.."
           if ($LastExitCode -ne 0)
@@ -120,7 +120,7 @@ jobs:
       - name: Install libtorrent
         run: |
           git clone `
-            --branch v2.1.2 `
+            --branch v1.2.20 `
             --depth 1 `
             --recurse-submodules `
             https://github.com/arvidn/libtorrent.git `

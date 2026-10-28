@@ -38,7 +38,7 @@ endmacro()
 
 find_libtorrent(${minLibtorrent1Version})
 if (LibtorrentRasterbar_FOUND AND (LibtorrentRasterbar_VERSION VERSION_GREATER_EQUAL 2.0))
-    find_libtorrent(${minLibtorrentVersion})
+    message(FATAL_ERROR "libtorrent v2.x is not supported; use libtorrent v1.x (>= ${minLibtorrent1Version}) instead")
 endif()
 
 # force variable type so that it always shows up in ccmake/cmake-gui frontends
