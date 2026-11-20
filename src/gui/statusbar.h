@@ -45,6 +45,7 @@ class StatusBar final : public QStatusBar
 
 public:
     StatusBar(QWidget *parent = nullptr);
+    void setSelectedTorrentsSize(const qlonglong totalSize);
 
 signals:
     void alternativeSpeedsButtonClicked();
@@ -74,6 +75,7 @@ private:
     QWidget *m_freeDiskSpaceSeparator = nullptr;
     QLabel *m_lastExternalIPsLbl = nullptr;
     QWidget *m_lastExternalIPsSeparator = nullptr;
+    QLabel *m_selectedSizeLbl = nullptr;
     QLabel *m_DHTLbl = nullptr;
     QWidget *m_DHTSeparator = nullptr;
     QPushButton *m_connecStatusLblIcon = nullptr;

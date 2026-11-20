@@ -44,6 +44,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileSystemWatcher>
+#include <QItemSelectionModel>
 #include <QLabel>
 #include <QMenu>
 #include <QMessageBox>
@@ -268,6 +269,10 @@ MainWindow::MainWindow(IGUIApplication *app, const WindowState initialState, con
     m_transferListWidget = new TransferListWidget(app, this);
     m_propertiesWidget = new PropertiesWidget(hSplitter);
     connect(m_transferListWidget, &TransferListWidget::currentTorrentChanged, m_propertiesWidget, &PropertiesWidget::loadTorrentInfos);
+    connect(m_transferListWidget->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &MainWindow::updateSelectedTorrentsSizeLabel);
+    connect(m_transferListWidget->getSourceModel(), &QAbstractItemModel::dataChanged,
+            this, &MainWindow::updateSelectedTorrentsSizeLabel);
     connect(m_propertiesWidget, &PropertiesWidget::openAdvancedSettingsLinkActivated, this, [this]
     {
         on_actionOptions_triggered();
@@ -834,6 +839,12 @@ void MainWindow::updateNbTorrents()
     m_tabs->setTabText(0, tr("Transfers (%1)").arg(m_transferListWidget->getSourceModel()->rowCount()));
 }
 
+void MainWindow::updateSelectedTorrentsSizeLabel()
+{
+    if (m_statusBar)
+        m_statusBar->setSelectedTorrentsSize(m_transferListWidget->getSelectedTorrentsTotalSize());
+}
+
 void MainWindow::on_actionDocumentation_triggered() const
 {
     QDesktopServices::openUrl(QUrl(u"https://wiki.qbittorrent.org"_s));
@@ -1397,6 +1408,7 @@ void MainWindow::showStatusBar(bool show)
         connect(m_statusBar.data(), &StatusBar::connectionButtonClicked, this, &MainWindow::showConnectionSettings);
         connect(m_statusBar.data(), &StatusBar::alternativeSpeedsButtonClicked, this, &MainWindow::toggleAlternativeSpeeds);
         setStatusBar(m_statusBar);
+        updateSelectedTorrentsSizeLabel();
     }
 }
 
