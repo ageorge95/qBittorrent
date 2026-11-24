@@ -329,6 +329,17 @@ QList<BitTorrent::Torrent *> TransferListWidget::getSelectedTorrents() const
     return torrents;
 }
 
+qlonglong TransferListWidget::getSelectedTorrentsTotalSize() const
+{
+    qlonglong totalSize = 0;
+    for (const BitTorrent::Torrent *const torrent : asConst(getSelectedTorrents()))
+    {
+        if (torrent->hasMetadata())
+            totalSize += torrent->totalSize();
+    }
+    return totalSize;
+}
+
 QList<BitTorrent::Torrent *> TransferListWidget::getVisibleTorrents() const
 {
     const int visibleTorrentsCount = m_sortFilterModel->rowCount();

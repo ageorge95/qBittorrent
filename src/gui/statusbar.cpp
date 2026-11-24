@@ -101,6 +101,10 @@ StatusBar::StatusBar(QWidget *parent)
     m_lastExternalIPsLbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     m_lastExternalIPsSeparator = createSeparator(this);
 
+    m_selectedSizeLbl = new QLabel(tr("Total selected size: N/A"));
+    m_selectedSizeLbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+    m_selectedSizeLbl->setVisible(false);
+
     const bool isDHTVisible = session->isDHTEnabled();
     m_DHTLbl = new QLabel(tr("DHT: %1 nodes").arg(0), this);
     m_DHTLbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
@@ -135,6 +139,8 @@ StatusBar::StatusBar(QWidget *parent)
     addPermanentWidget(createSeparator(this));
     addPermanentWidget(m_altSpeedsBtn);
     addPermanentWidget(createSeparator(this));
+    addPermanentWidget(m_selectedSizeLbl);
+    addPermanentWidget(createSeparator(this));
     addPermanentWidget(m_dlSpeedLbl);
     addPermanentWidget(createSeparator(this));
     addPermanentWidget(m_upSpeedLbl);
@@ -149,6 +155,12 @@ StatusBar::StatusBar(QWidget *parent)
     connect(session, &BitTorrent::Session::freeDiskSpaceChecked, this, &StatusBar::updateFreeDiskSpaceLabel);
 
     connect(Preferences::instance(), &Preferences::changed, this, &StatusBar::optionsSaved);
+}
+
+void StatusBar::setSelectedTorrentsSize(const qlonglong totalSize)
+{
+    m_selectedSizeLbl->setVisible(totalSize > 0);
+    m_selectedSizeLbl->setText(tr("Total selected size: ") + Utils::Misc::friendlyUnit(totalSize));
 }
 
 void StatusBar::showRestartRequired()
